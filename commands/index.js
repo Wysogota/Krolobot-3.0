@@ -1,10 +1,10 @@
-const gpt = require('./gpt');
+import { search } from './gpt/index.js';
 
-module.exports = {
+export default {
   ping: {
     execute: (message, args) => {
       message.reply('Pong!');
     }
   },
-  gpt: gpt.search,
+  gpt: search,
 }

@@ -1,5 +1,5 @@
-const { Client, GatewayIntentBits } = require('discord.js');
-require('dotenv').config();
+import { Client, GatewayIntentBits } from 'discord.js';
+import commands from './commands/index.js';
 
 const client = new Client({
   intents: [
@@ -9,7 +9,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ]
 });
-const commands = require('./commands');
+
 const prefix = '/';
 
 client.on('ready', () => {
