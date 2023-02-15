@@ -13,6 +13,8 @@ const prevMessage = {
   parentMessageId: null,
 }
 
+const msgQueue = new Map(); // gptId: msgId
+
 export const search = {
   name: 'gpt',
   description: 'Search in chatGPT',
@@ -25,15 +27,23 @@ export const search = {
   execute: (message, args) => {
     const requestMsg = args.join(' ');
 
+
     gptClient
       .sendMessage(requestMsg, {
         conversationId: prevMessage.conversationId,
         parentMessageId: prevMessage.parentMessageId,
+        onProgress: async (partialRes) => {
+          const text = partialRes.text.trim();
+          if (text) {
+            msgQueue.set(partialRes.id, text);
+          }
+        }
       })
       .then((res) => {
         prevMessage.conversationId = res.conversationId;
         prevMessage.parentMessageId = res.parentMessageId;
-        message.reply(res.text);
+        message.reply(msgQueue.get(res.id))
+        // msgQueue.delete(res.id);
       })
       .catch((error) => {
         console.error('error', error);
