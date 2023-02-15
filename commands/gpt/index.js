@@ -6,7 +6,12 @@ dotenv.config();
 
 const gptClient = new ChatGPTAPI({
   apiKey: process.env.OPENAI_API_KEY
-})
+});
+
+const prevMessage = {
+  conversationId: null,
+  parentMessageId: null,
+}
 
 export const search = {
   name: 'gpt',
@@ -19,8 +24,15 @@ export const search = {
   }],
   execute: (message, args) => {
     const requestMsg = args.join(' ');
-    gptClient.sendMessage(requestMsg)
+
+    gptClient
+      .sendMessage(requestMsg, {
+        conversationId: prevMessage.conversationId,
+        parentMessageId: prevMessage.parentMessageId,
+      })
       .then((res) => {
+        prevMessage.conversationId = res.conversationId;
+        prevMessage.parentMessageId = res.parentMessageId;
         message.reply(res.text);
       })
       .catch((error) => {
